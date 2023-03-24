@@ -64,7 +64,7 @@ class_table {
 
 **1. 常量池中的所有的数据都是表，具体有14种表：**
 
-![img](pictures/Cgq2xl6DCV6AcrLKAAIl1RRQwuM068.png)
+![img](../pictures/Cgq2xl6DCV6AcrLKAAIl1RRQwuM068.png)
 
 **2.每个String常量都是用一个CONSTANT_Class_info表来存的:**
 
