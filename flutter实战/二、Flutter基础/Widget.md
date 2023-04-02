@@ -49,7 +49,7 @@ createElement(): 创建对应的`Element`
 
 生命周期图如下所示：
 
-![img](../pictures/2-5.a59bef97.png)
+![img](../../pictures/2-5.a59bef97.png)
 
 - `initState`：初始化方法，只会调用一次。此回调中不能调用`BuildContext.dependOnInheritedWidgetOfExactType`
 - `didChangeDependencies()`：当State对象的依赖发生变化时会被调用；
