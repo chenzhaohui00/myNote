@@ -16,7 +16,7 @@ void someFunction(double offset) {
 #### 输出
 
 - `print()`输出到控制台，可以使用`flutter logs`查看。
-- 如果你一次输出太多，那么Android有时会丢弃一些日志行。为了避免这种情况，我们可以使用Flutter的`foundation`库中的`debugPrint()`，它封装了 print，将一次输出的内容长度限制在一个级别（内容过多时会分批输出），避免被Android内核丢弃。
+- 如果你一次输出太多，那么Android有时会丢弃一些日志行。为了避免这种情况，我们可以使用Flutter的`foundation`库中的`debugPrint()`，它封装了`print`，将一次输出的内容长度限制在一个级别（内容过多时会分批输出），避免被Android内核丢弃。
 - 树中的一些类也具有`toStringDeep`实现，从该点返回整个子树的多行描述。
 - 一些具有详细信息`toString`的类会实现一个`toStringShort`，它只返回对象的类型或其他非常简短的描述。
 

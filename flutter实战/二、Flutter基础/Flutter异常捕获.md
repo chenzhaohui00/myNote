@@ -4,7 +4,7 @@ Dart和JS一样，都是单线程模型。它的运行机制大致如下：
 
 ![img](../../pictures/2-21.eb7484c9.png)
 
-可以看到，有两个队列，一个是“微任务队列” **microtask queue**，另一个叫做“事件队列” **event queue**。微任务队列优先级高于事件队列。在Dart中，所有的外部事件任务都在事件队列中，如IO、计时器、点击、以及绘制事件等，而微任务通常来源于Dart内部，并且微任务非常少可以通过`Future.microtask(…)`方法向微任务队列插入一个任务。
+可以看到，有两个队列，一个是“微任务队列” **microtask queue**，另一个叫做“事件队列” **event queue**。微任务队列优先级高于事件队列。在Dart中，所有的外部事件任务都在事件队列中，如IO、计时器、点击、以及绘制事件等，而微任务通常来源于Dart内部，并且微任务非常少，可以通过`Future.microtask(…)`方法向微任务队列插入一个任务。
 
 Dart线程运行过程，如上图中所示，入口函数 main() 执行完后，消息循环机制便启动了。首先会按照先进先出的顺序逐个执行微任务队列中的任务，事件任务执行完毕后程序便会退出，但是，在事件任务执行的过程中也可以插入新的微任务和事件任务，在这种情况下，整个线程的执行过程便是一直在循环，不会退出，而Flutter中，主线程的执行过程正是如此，永不终止。
 
@@ -59,9 +59,9 @@ FlutterErrorDetails _debugReportException(
 在Dart中，异常分两类：同步异常和异步异常，同步异常可以通过`try/catch`捕获，而异步异常则比较麻烦，如下面的代码是捕获不了`Future`的异常的：
 
 ```dart
-try{
+try {
     Future.delayed(Duration(seconds: 1)).then((e) => Future.error("xxx"));
-}catch (e){
+} catch (e) {
     print(e)
 }
 ```
@@ -82,7 +82,7 @@ R runZoned<R>(R body(), {
 runZoned(
   () => runApp(MyApp()),
   zoneSpecification: ZoneSpecification(
-    // 拦截print 蜀西湖
+    // 拦截print
     print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
       parent.print(zone, "Interceptor: $line");
     },
@@ -126,7 +126,7 @@ void main() {
     // 拦截未处理的异步错误
     handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone,
                           Object error, StackTrace stackTrace) {
-      reportErrorAndLog(details);
+      reportErrorAndLog(makeDetail(error, stackTrace));
       parent.print(zone, '${error.toString()} $stackTrace');
     },
   ),

@@ -1,14 +1,14 @@
 # Widget简介
 
 - `Widget`不等同于原生开发时的UI控件，他也可以表示一些功能性的组件，比如`GestureDetector`、`Theme`等。
-- Flutter中就是通过嵌套`Widget`来构建UI的，在Flutter中万物皆`Widget`
+- Flutter 中就是通过嵌套`Widget`来构建UI的，在 Flutter 中万物皆`Widget`
 - `Widget`的功能是“描述一个UI元素的配置信息”，比如对于 Text 来讲，文本的内容、对齐方式、文本样式都是它的配置信息。
 
 ## Widget类的重要成员
 
 Key：Widget类中有一个成员Key，作用是决定是否在下一次`build`时复用旧的 `widget` 
 
-canUpdate()：用来判断是否可以旧 `widget`的方法，里面使用了Key来做判断
+canUpdate()：用来判断是否可以复用旧 `widget`的方法，里面使用了Key来做判断
 
 createElement(): 创建对应的`Element`
 
@@ -41,7 +41,7 @@ createElement(): 创建对应的`Element`
 
 `State`中有两个常用属性：
 
-1.`widget`，即与当前`State`实例关联的`widget`实例。由于`state`实例不会因重新构建而变化，所以在重新构建后，如果`widget`实例遍了，`state`内的这个`widget`变量会指向新的`widget`实例。
+1.`widget`，即与当前`State`实例关联的`widget`实例。由于`state`实例不会因重新构建而变化，所以在重新构建后，如果`widget`实例变了，`state`内的这个`widget`变量会指向新的`widget`实例。
 
 2.`context`，其对应的`widget`实例的`BuildContext`对象。
 
@@ -58,12 +58,15 @@ createElement(): 创建对应的`Element`
   - 在调用`didUpdateWidget()`之后。
   - 在调用`setState()`之后。
   - 在调用`didChangeDependencies()`之后。
-  - 在State对象从树中一个位置移除后（会调用deactivate）又重新插入到树的其他位置之后。
+  - 在`State`对象从树中一个位置移除后（会调用`deactivate`）又重新插入到树的其他位置之后。
 - `reassemble()`：此回调是专门为了开发调试而提供的，在热重载(hot reload)时会被调用，此回调在Release模式下永远不会被调用。
-- `didUpdateWidget ()`：当 State 对象从树中被移除时，会调用此回调。如果移除后没有重新插入到树中则紧接着会调用`dispose()`方法。
-- 如果移除后没有重新插入到树中则紧接着会调用`dispose()`方法。
+- `didUpdateWidget ()`：当 `State` 对象从树中被移除时，会调用此回调。如果移除后没有重新插入到树中则紧接着会调用`dispose()`方法。
+- `deactivate()`：当 State 对象从树中被移除时，会调用此回调。在一些场景下，Flutter 框架会将 State 对象重新插到树中，如包含此 State 对象的子树在树的一个位置移动到另一个位置时（可以通过GlobalKey 来实现）。如果移除后没有重新插入到树中则紧接着会调用`dispose()`方法。
+- `dispose()`：当 State 对象从树中被永久移除时调用；通常在此回调中释放资源。
 
-## 获取Widget的state对象
+## 在子 widget 树中获取父级 State 对象
+
+有一些场景需要在子 widget 树中获取父级 StatefulWidget 的State 对象。
 
 #### 通过context
 
@@ -127,7 +130,7 @@ _globalKey.currentState.openDrawer()
 > 1. 使用 GlobalKey 开销较大，如果有其他可选方案，应尽量避免使用它
 > 1. 同一个 GlobalKey 在整个 widget 树中必须是唯一的，不能重复
 
-## 通过RenderObject自定义Widget
+## 通过 RenderObjectWidget 自定义 Widget
 
 `RenderObject`是定义`Widget`最原始的方式，而`StatelessWidget`和`StatefulWidget`只是两个帮助自定义`Widget`的工具类。
 
@@ -159,7 +162,7 @@ class RenderCustomObject extends RenderBox{
 }
 ```
 
-不包含子组件的`Widget`可以直接继承`LeafRenderObjectWidget`，后者继承于`Widget`，并在createElement中返回了一个`LeafRenderObjectElement`
+不包含子组件的`Widget`可以直接继承`LeafRenderObjectWidget`，后者继承于`Widget`，并在`createElement`中返回了一个`LeafRenderObjectElement`
 
 ```dart
 abstract class LeafRenderObjectWidget extends RenderObjectWidget {
@@ -170,7 +173,7 @@ abstract class LeafRenderObjectWidget extends RenderObjectWidget {
 }
 ```
 
-如果自定义的 widget 可以包含子组件，则可以根据子组件的数量来选择继承SingleChildRenderObjectWidget 或 MultiChildRenderObjectWidget，它们也实现了createElement() 方法，返回不同类型的 Element 对象。
+如果自定义的 widget 可以包含子组件，则可以根据子组件的数量来选择继承`SingleChildRenderObjectWidget` 或 `MultiChildRenderObjectWidget`，它们也实现了`createElement()` 方法，返回不同类型的 Element 对象。
 
 ## Flutter SDK内置组件库
 

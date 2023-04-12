@@ -197,6 +197,7 @@ protected ViewGroup generateLayout(DecorView decor) {
 接下来就是重要的事，针对不同的主题，给layoutResource赋值了不同的布局文件。这个layoutResource就是我们activity的根布局。  
 接下来我们看到了另一行关键代码`mDecor.onResourcesLoaded(mLayoutInflater, layoutResource);`  
 此方法中最重要的就是下面 两行
+
 ```
 void onResourcesLoaded(LayoutInflater inflater, int layoutResource) {
     //此处省略backgroud的处理
@@ -207,6 +208,7 @@ void onResourcesLoaded(LayoutInflater inflater, int layoutResource) {
 ```
 可以看到其实就是将layoutResource作为根View，然后添加到DecorView中。这里提一下，DecorView本质上就是一个FrameLayout。所以就是将这个根布局填充到了DecorView中。  
 继续generateLayout方法，在通过onResourcesLoaded创建了基础的layout布局以后，通过`ViewGroup contentParent = (ViewGroup)findViewById(ID_ANDROID_CONTENT);`找到固定id的content并在方法的最终返回。
+
 ```
 /**
  * The ID that the main layout in the XML layout file should have.
@@ -380,26 +382,27 @@ public void setView(View view, WindowManager.LayoutParams attrs, View panelParen
 到此为止，把window通过addView真正添加到wms中，并且通过requestLayout请求了绘制，我们的UI页面要显示出来了。
 总结起来就是：  
 
-```
+```java
 ActivityThread.handleResumeActivity()
 ->WindowMangerImple.addView(decorView, LayoutParams)
 ->WindowManagerGlobal.addView()
-->requestLayout() & ViewRootImpl.setView()
+->ViewRootImpl.setView()
+->requestLayout()
 ```
 
 #### 绘制的类及方法
 在`WindowManagerGlobal.addView()`中初始化了一个ViewRoot，然后将decorView添加到了ViewRoot中：
-```
+```java
 ViewRootImpl.setView(decorView, layoutParams, parentView);
 ```
 接下来，在setView中调用了如下方法进行绘制：
-```
-ViewRootImpl.requestLayout()->scheduleTraversals()->doTraversals()->performTraversals()
+```java
+ViewRootImpl.requestLayout()->scheduleTraversals()->doTraversals()->performTraversals();
 ```
 
 #### 绘制的三大步骤
 最后在`performTraversals()`中，通过一下的三个步骤，进行了绘制：
-```
+```java
 ViewRootImpl.performMeasure() //测量
 ViewRootImpl.performLayout() //布局
 ViewRootImpl.performDraw() //绘制
