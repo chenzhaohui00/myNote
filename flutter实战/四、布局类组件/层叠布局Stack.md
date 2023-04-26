@@ -31,7 +31,7 @@ const Positioned({
 
 注意：只能指定`left`、`right`、`width`三个属性中的两个，如指定`left`和`width`后，`right`会自动算出(`left`+`width`)，如果同时指定三个属性则会报错，垂直方向同理。
 
-sample：
+## sample
 
 ```dart
 SizedBox(
