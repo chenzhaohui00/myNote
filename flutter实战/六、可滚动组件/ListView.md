@@ -26,11 +26,11 @@ ListView({
 
 - `itemExtent`：extent 是范围、长度的意思，`itemExtent`就是item的长度，当主轴方向为横向时，即为item的宽度。
 - `prototypeItem`：不指定itemExtent时用来计算item长度/宽度
-- `shrinkWrap`：是否根据ListView的子组件的总长度来设置`ListView`的长度，默认为 false，默认`ListView`会设置为可能的最长的长度。当`ListView`在一个主轴无边界的容器中时，`shrinkWrap`必须为`true`。
+- `shrinkWrap`：shrink是收缩的意思，这个参数意思是是否根据ListView的子组件的总长度来设置`ListView`的长度，默认为 false，默认`ListView`会设置为尽可能长的长度。当`ListView`在一个主轴无边界的容器中时，`shrinkWrap`必须为`true`。
 - `addRepaintBoundaries`：是否给每个子组件包裹一个“绘制边界”以避免不必要的重绘，但是当列表项重绘的开销非常小（如一个颜色块，或者一个较短的文本）时，不添加`RepaintBoundary`反而会更高效。如果列表项自身来维护是否需要添加绘制边界组件，则此参数应该指定为 false。
 - `children`：子widget列表，即使使用此参数构建`ListView`，列表也是懒加载的，等到真正需要加载的时候才会对 Widget 进行布局和绘制。
 
-> 创建滚动列表时，通过`itemExtent`或`prototypeItem`指定高度是一个好习惯，可以提供性能
+> 创建滚动列表时，通过`itemExtent`或`prototypeItem`指定高度是一个好习惯，可以提高性能
 
 
 
@@ -53,7 +53,9 @@ ListView.builder({
 
 
 
-## 添加分隔线(ListView.separated构造)
+## 添加分割线(ListView.separated构造)
+
+使用`ListView.separated`构造可以创建带分割线的`ListView`，这个构造就是多了一个`separatorBuilder`的函数参数，入参为`context`和`index`，出参为一个分割线`Widget`，通常使用`Divider`组件。
 
 ```dart
 class ListView3 extends StatelessWidget {
@@ -143,6 +145,8 @@ Widget build(BuildContext context) {
 }
 ```
 
+> 这个问题尝试使用`itemCount`和`shrinkWrap`解决是无效的，也就是说必须`ListView`接受到一个有效的 Constraints。
+
 
 
 ## 实例
@@ -230,3 +234,4 @@ class _InfiniteListViewState extends State<InfiniteListView> {
 2. 数据中定义一个bottom的tag，在`ListView`的`build`方法中判断，当加载到了bottom时：
    1. 如果没有更多的数据，则返回到底了的样式的Widget。
    2. 加载新的数据，且返回加载更多样式的Widget。
+   3. 获取到新数据以后，通过`setState`更新即可。

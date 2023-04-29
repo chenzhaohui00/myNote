@@ -1,6 +1,6 @@
 ## 简介
 
-AnimatedList 可以在列表中插入或删除节点时执行一个动画。AnimatedList 是一个 StatefulWidget，它对应的 State 类型为 AnimatedListState，添加和删除元素的方法位于 AnimatedListState 中：
+`AnimatedList` 可以在列表中插入或删除节点时执行一个动画。`AnimatedList` 是一个 `StatefulWidget`，它对应的 State 类型为 `AnimatedListState`，添加和删除元素的方法位于 `AnimatedListState` 中：
 
 ```dart
 void insertItem(int index, { Duration duration = _kDuration });
