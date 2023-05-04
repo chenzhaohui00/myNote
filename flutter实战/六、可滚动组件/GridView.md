@@ -25,7 +25,7 @@ GridView({
 
 ## SliverGridDelegateWithFixedCrossAxisCount
 
-见名知义，就是固定横轴数目，构造函数：
+见名知义，就是根据固定的横轴的子组件数目来布局，构造函数：
 
 ```dart
 SliverGridDelegateWithFixedCrossAxisCount({
@@ -78,7 +78,7 @@ GridView.count(
 
 ## SliverGridDelegateWithMaxCrossAxisExtent
 
-固定子元素的最大长度，构造函数：
+根据固定的子组件的最大长度来布局，构造函数：
 
 ```dart
 SliverGridDelegateWithMaxCrossAxisExtent({

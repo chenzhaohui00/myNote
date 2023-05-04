@@ -1,6 +1,6 @@
 ## 简介
 
-`TabBarView`是对`PageView`的封装，相当于是有Tab的`PageView`,和`TabBar`配合使用。
+`TabBarView`是对`PageView`的封装，相当于是有Tab的`PageView`，和`TabBar`配合使用。
 
 所以使用`TabBarView`就是使用一个特定的`PageView`，其构造方法如下：
 
@@ -24,7 +24,7 @@
 const TabBar({
   Key? key,
   required this.tabs, // 具体的 Tabs，需要我们创建
-  this.controller,
+  this.controller, // TabController
   this.isScrollable = false, // 是否可以滑动
   this.padding,
   this.indicatorColor,// 指示器颜色，默认是高度为2的一条下划线

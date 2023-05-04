@@ -1,6 +1,6 @@
 ## 简介
 
-`SingleChildScrollView`相当于 Android 中的 `ScrollView`，**通常`SingleChildScrollView`只应在期望的内容不会超过屏幕太多时使用**，这是因为`SingleChildScrollView`不支持基于 Sliver 的延迟加载模型定义如下：
+`SingleChildScrollView`相当于 Android 中的 `ScrollView`，**通常`SingleChildScrollView`只应在期望的内容不会超过屏幕太多时使用**，这是因为`SingleChildScrollView`不支持基于 Sliver 的延迟加载模型，`SingleChildScrollView`构造如下：
 
 ```dart
 SingleChildScrollView({
