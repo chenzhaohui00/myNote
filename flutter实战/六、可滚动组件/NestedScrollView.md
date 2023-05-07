@@ -46,7 +46,7 @@ Material(
 );
 ```
 
-header部分的slivers有两个，一个SliverAppBar，一个SliverList，body部分是一个ListView。也就是
+header部分的slivers有两个，一个SliverAppBar，一个SliverList，body部分是一个ListView。
 
 
 
@@ -66,9 +66,9 @@ const SliverAppBar({
 })
 ```
 
-`pinned`功能和`SliverPersistentHeader`相同，`floating`和`snap`同时为true时提供和`SliverPersistentHeader`相似的功能，不同之处是，当用户反向滑动时，`SliverPersistentHeader`会根据用户滑动的距离显示header的长度，而`SliverAppbar`的floating效果是只要用户反向滑动了，header会立刻显示出全部长度并覆盖列表。
+`pinned`功能和`SliverPersistentHeader`相同，`floating`和`snap`同时为true时提供和`SliverPersistentHeader`的`floating`相似的功能，不同之处是，当用户反向滑动时，`SliverPersistentHeader`会根据用户滑动的距离显示header的长度，同时整个sliver列表也想下滑动相同的距离。而`SliverAppbar`的floating效果是只要用户反向滑动了，header会立刻显示出全部长度并覆盖列表，底部列表不懂。
 
-比如一个纵向向下滑动的列表，header为200的高度，用户滑动到中间，header消失了，然后用户往回滑动了50的距离，此时如果header是`SliverPersistentHeader`，则会显示出header，但只显示50的高度，同时下面的list也会向下滑动50，这样用户依然能看到之前的条目，直到用户滑动了200以上距离，header完全显示出来才会继续向上滑动；而如果header是`SliverAppBar`，则header会立刻完全显示除200的高度，下方的列表不会动，也就意味着上面的一些item会被floating的header覆盖掉。
+比如一个纵向向下滑动的列表，header为200的高度，用户滑动到中间，header为消失状态，然后用户往回滑动了50的距离，此时如果header是`SliverPersistentHeader`，则会显示出header，但只显示50的高度，同时下面的list也会向下滑动50，这样用户依然能看到之前的条目；而如果header是`SliverAppBar`，则header会立刻完全显示出200的高度，下方的列表不会动，也就意味着上面的一些item会被floating的header覆盖掉。
 
 `SliverAppBar`的这种效果很多时候是我们不想要的，因为用户很可能只是想往回滑一点看看上面的item，这样直接覆盖了一个header，用户为了看到相同的item反而要滑动更多，Flutter官方提供了一个解决方案，就是将SliverAppBar嵌套一个Widget：`SliverOverlapAbsorber`，然后在 body 中往 `CustomScrollView` 的 sliver列表的最前面插入了一个 `SliverOverlapInjector`。
 
@@ -118,3 +118,5 @@ class SnapAppBar extends StatelessWidget {
   }
 }
 ```
+
+实际上，当 snap 为 true 时，只需要给 SliverAppBar 包裹一个 SliverOverlapAbsorber即可，而无需再给 CustomScrollView 添加 SliverOverlapInjector，因为这种情况 SliverOverlapAbsorber 会自动吸收 overlap，以调整自身的布局高度为 SliverAppBar 的实际高度，这样的话 header 的高度变化后就会自动将 body 向下撑（header 和 body 属于同一个 CustomScrollView），同时，handle 中的 overlap 长度始终 0。**而只有当 SliverAppBar 被 SliverOverlapAbsorber 包裹且为固定模式时**（pinned 为 true ），CustomScrollView 中添加SliverOverlapInjector 才有意义。
