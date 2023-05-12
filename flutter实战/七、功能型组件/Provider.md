@@ -1,6 +1,6 @@
 # 跨组件状态共享
 
-Flutter为了处理跨组件状态共享的问题，基于`inheritedWidget`开发了一套 Provider 框架。
+这里的状态也指的是数据或对象，Flutter为了处理跨组件状态共享的问题，基于`inheritedWidget`开发了一套 Provider 框架。
 
 主要包含三个部分：
 
@@ -12,11 +12,11 @@ Flutter为了处理跨组件状态共享的问题，基于`inheritedWidget`开�
 
 就是一个被观察者，可以向观察者发送通知。主要有几个方法：
 
-- addListener 添加监听者
-- removwListener 移除监听者
-- notifyListeners 通知监听者
+- `addListener` ：添加监听者
+- `removeListener`： 移除监听者
+- `notifyListeners`： 通知监听者
 
-通常用来作为数据包裹类的父类，在数据变动时通知观察者。如下：
+数据包裹类要继承`ChangeNotifier`，在数据变动时调用`notifyListeners`通知观察者。如下：
 
 ```dart
 class CartModel extends ChangeNotifier {
@@ -29,6 +29,7 @@ class CartModel extends ChangeNotifier {
 
   add(Item item) {
     _items.add(item);
+    //数据变化，通知listeners
     notifyListeners();
   }
 }
@@ -81,7 +82,7 @@ return Consumer<CartModel>(
 
 第三个参数是 `child`，用于优化目的。如果 `Consumer` 下面有一个庞大的子树，当模型发生改变的时候，该子树 **并不会** 改变，那么你就可以仅仅创建它一次，然后通过 builder 获得该实例。
 
-注意Consumer包裹的子Widget会成为ChangeNotifier的监听者，在ChangeNotifier调用notifyListeners时rebuild。
+注意`Consumer`包裹的子Widget会成为`ChangeNotifier`的监听者，在`ChangeNotifier`调用`notifyListeners`时rebuild。
 
 ##  Provider.of
 

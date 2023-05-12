@@ -42,7 +42,7 @@ InheritedElement? getElementForInheritedWidgetOfExactType<T extends InheritedWid
 T? dependOnInheritedWidgetOfExactType<T extends InheritedWidget>({ Object? aspect });
 ```
 
-如注释，这两个方法的区别就是，是否会在获取其数据的同时依赖此`InheritedWidget`，也就是订阅其变化。
+如注释，这两个方法看名字也可以看出来，区别就是是否会在获取其数据的同时依赖此`InheritedWidget`，也就是订阅其变化。
 
 然后我们就可以在子控件中使用其数据了：
 
