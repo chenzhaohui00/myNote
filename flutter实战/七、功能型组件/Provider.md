@@ -104,6 +104,8 @@ Provider.of<CartModel>(context, listen: false).removeAll();
 
 ### 1. 数据包裹类 InheritedWidget
 
+用来包裹数据类`ChangeNotifier`：
+
 ```dart
 class InheritedProvider<T> extends InheritedWidget {
   final T data;
