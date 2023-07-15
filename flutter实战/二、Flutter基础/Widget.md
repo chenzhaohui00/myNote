@@ -66,7 +66,7 @@ createElement(): 创建对应的`Element`
 
 ## 在子 widget 树中获取父级 State 对象
 
-有一些场景需要在子 widget 树中获取父级 StatefulWidget 的State 对象。
+有一些场景需要在子 widget 树中获取父级 `StatefulWidget` 的State 对象。
 
 #### 通过context
 

@@ -4,14 +4,16 @@
 
 似乎只能通过构造函数传递了，那如果需要共享数据的两个widget之间隔了五六层widget，难道要把数据或者对象一层层传下来？这显然可读性和可维护性太差了。
 
-针对这种普遍的数据共享的需求，Flutter 提供了`InheritedWidget`，我们需要做的就是定义一个`InheritedWidget`的子类，在其中包裹数据并实现一个方法返回当此widget rebuild时是否需要通知依赖他的组件更新。
+针对这种普遍的数据共享的需求，Flutter 提供了`InheritedWidget`，控件树中它的子孙组件可以直接获取到它的对象，从而获取到它的数据或它存储的其他对象。另外子孙组件还可以依赖它，也就是订阅它的变化，当它 rebuild 了以后通知依赖它的组件也去 rebuild。
+
+我们需要做的就是定义一个`InheritedWidget`的子类，在其中包裹数据，然后实现一个方法返回当此widget rebuild时是否需要通知依赖他的组件更新。
 
 示例如下：
 
 ```dart
 //继承InheritedWidget组件共享数据
 class ShareIntDataWidget extends InheritedWidget {
-  //待共享的数据
+  //待共享的数据，推荐写成final的，官方说 InheritedWidget 需要是 immutable
   final int data;
 
   const ShareIntDataWidget(
@@ -31,7 +33,7 @@ class ShareIntDataWidget extends InheritedWidget {
 }
 ```
 
-上面的`of`方法中提供了它在控件树中的孩子都可以很方便地获取到他的方式，也是两个常用的方法是：
+上面的`of`方法中写了它在控件树中的孩子都可以很方便地获取到他的方式，也是两个常用的方法是：
 
 ```dart
 //获取InheritedElement，然后调用InheritedElement.widget获取到InheritedWidget对象
@@ -40,7 +42,7 @@ InheritedElement? getElementForInheritedWidgetOfExactType<T extends InheritedWid
 T? dependOnInheritedWidgetOfExactType<T extends InheritedWidget>({ Object? aspect });
 ```
 
-如注释，这两个方法的区别就是，是否会在获取其数据的同时依赖此`InheritedWidget`，也就是订阅其变化。
+如注释，这两个方法看名字也可以看出来，区别就是是否会在获取其数据的同时依赖此`InheritedWidget`，也就是订阅其变化。
 
 然后我们就可以在子控件中使用其数据了：
 
@@ -53,6 +55,7 @@ class _TestWidget extends StatefulWidget {
 class _TestWidgetState extends State<_TestWidget> {
   @override
   Widget build(BuildContext context) {
+    //在build中获取依赖的widiget的数据
     return Text(ShareIntDataWidget.of(context)!.data.toString(), textScaleFactor: 3);
   }
 
