@@ -55,3 +55,5 @@ rb.gravity = Gravity.CENTER
 ## RadioButton必须都有ID
 
 一般在手动往RadioGroup中添加RadioButton时，可能不会给每个radioButton添加Id，然后就会发现在某些情况下，会发生一个RadioGroup中的多个RadioButton可以同时被选中。比如我这次在一个自定义的组合控件中，根据attributeSet或调用的方法传入的一些参数动态添加RadioButton，然后在某个页面中的某个这个控件，他的子组件的某一个无法被uncheck，即使check了其他rb，这个rb也还是选中状态。
+
+另外，动态生成View的Id可以在API17以上可以用api：`View.generateViewId()`。
