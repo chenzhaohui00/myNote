@@ -2,7 +2,7 @@
 
 #### 编程式断点
 
-导包：`import 'dart:developer';`。然后就可以使用`debuge()`语句，该语句接收一个bool表达式，当真时程序中断，如下
+导包：`import 'dart:developer';`。然后就可以使用`debuger()`语句，该语句接收一个bool表达式，当真时程序中断，如下
 
 ```dart
 void someFunction(double offset) {

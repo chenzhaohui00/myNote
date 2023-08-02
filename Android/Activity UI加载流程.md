@@ -3,14 +3,14 @@
 
 #### PhoneWindow
 首先看Activity的setContentView()方法：
-```
+```java
 public void setContentView(@LayoutRes int layoutResID) {
     getWindow().setContentView(layoutResID);
     initWindowDecorActionBar();
 }
 ```
 可以看到是调用了`getWindow()`的`setContentView()`，那么就继续去看`getWindow()`
-```
+```java
 private Window mWindow;
 /**
  * 很多代码...
@@ -20,7 +20,7 @@ public Window getWindow() {
 }
 ```
 得知getWindow()就是一个Window对象。
-```
+```java
  * <p>The only existing implementation of this abstract class is
  * android.view.PhoneWindow, which you should instantiate when needing a
  * Window.
@@ -62,7 +62,7 @@ public void setContentView(int layoutResID) {
 
 #### installDecor()方法
 首先看第一行关键代码`installDecor()`，这个方法比较长，只列出关键部分：
-```
+```java
  mForceDecorInstall = false;
 if (mDecor == null) {
     mDecor = generateDecor(-1);
@@ -82,7 +82,7 @@ if (mContentParent == null) {
 }
 ```
 显然`mDecor = generateDecor(-1);`为其第一行关键代码，继续往里看
-```
+```java
 protected DecorView generateDecor(int featureId) {
     // System process doesn't have application context and in that case we need to directly use
     // the context we have. Otherwise we want the application context, so we don't cling to the
@@ -106,12 +106,12 @@ protected DecorView generateDecor(int featureId) {
 ```
 重要的代码就一行，就是new了一个DecorView，如果继续点进去DecorView的构造方法，可以看到一个setWindow()方法算是重要的方法。其实就是在DecorView中存储外部的PhonWindow对象。不算重要，就不列代码了。  
 然后再回到`installDecor()`，继续看下一行关键代码:
-```
+```java
 if (mContentParent == null) {
     mContentParent = generateLayout(mDecor);
 ```
 点进generateLayout继续看
-```
+```java
 protected ViewGroup generateLayout(DecorView decor) {
 /**
  * 省略n多代码，主要内容为根据getWindowStyle()拿到的TypedArray以及根据getAttributes()拿到的layoutParams
@@ -198,7 +198,7 @@ protected ViewGroup generateLayout(DecorView decor) {
 接下来我们看到了另一行关键代码`mDecor.onResourcesLoaded(mLayoutInflater, layoutResource);`  
 此方法中最重要的就是下面 两行
 
-```
+```java
 void onResourcesLoaded(LayoutInflater inflater, int layoutResource) {
     //此处省略backgroud的处理
     final View root = inflater.inflate(layoutResource, null);
@@ -209,7 +209,7 @@ void onResourcesLoaded(LayoutInflater inflater, int layoutResource) {
 可以看到其实就是将layoutResource作为根View，然后添加到DecorView中。这里提一下，DecorView本质上就是一个FrameLayout。所以就是将这个根布局填充到了DecorView中。  
 继续generateLayout方法，在通过onResourcesLoaded创建了基础的layout布局以后，通过`ViewGroup contentParent = (ViewGroup)findViewById(ID_ANDROID_CONTENT);`找到固定id的content并在方法的最终返回。
 
-```
+```java
 /**
  * The ID that the main layout in the XML layout file should have.
  */
@@ -223,7 +223,7 @@ public static final int ID_ANDROID_CONTENT = com.android.internal.R.id.content;
 
 #### 添加我们指定的View到contentParent中
 继续看`setContentView()`的源码，重要的就只剩下一行：
-```
+```java
 @Override
 public void setContentView(int layoutResID) {
     // Note: FEATURE_CONTENT_TRANSITIONS may be set in the process of installing the window
