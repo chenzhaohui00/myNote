@@ -25,7 +25,7 @@ createElement(): 创建对应的`Element`
 
 #### context
 
-`build`方法有一个`context`参数，它是一个`BuildContext`，表示当前`widget`在`widget`树中的上下文。通过`context`可以对当前 widget 在 widget 树中位置中执行“相关操作”，比如它提供了从当前 widget 开始向上遍历 widget 树以及按照 widget 类型查找父级 widget 的方法。
+`build`方法有一个`context`参数，它是一个`BuildContext`，表示当cr前`widget`在`widget`树中的上下文。通过`context`可以对当前 widget 在 widget 树中位置中执行“相关操作”，比如它提供了从当前 widget 开始向上遍历 widget 树以及按照 widget 类型查找父级 widget 的方法。
 
 ## StatefulWidget
 

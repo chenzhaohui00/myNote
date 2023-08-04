@@ -27,7 +27,7 @@ Align(
 ),
 ```
 
-这就是一个底色为浅蓝色，右上角有一个FlutterLogo的`Align`组件。`Align`自己的宽高均为120，通过子组件的size以及factor系数的来。
+这就是一个右上角有一个FlutterLogo的`Align`组件。`Align`自己的宽高均为120，通过子组件的size以及factor系数的来。
 
 这个alignment是对齐参数，它接收`AlignmentGeometry`类型。
 

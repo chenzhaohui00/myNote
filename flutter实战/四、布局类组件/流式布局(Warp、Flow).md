@@ -8,7 +8,7 @@ Wrap({
   this.direction = Axis.horizontal, //方向
   this.alignment = WrapAlignment.start, //主轴方向子组件的对齐方式
   this.spacing = 0.0, //主轴方向子组件的间距
-  this.runAlignment = WrapAlignment.start, //折行后，纵轴方向多行之间的间距
+  this.runAlignment = WrapAlignment.start, //折行后，纵轴方向内所有行的对齐
   this.runSpacing = 0.0, //折行后，纵轴方向的行间距
   this.crossAxisAlignment = WrapCrossAlignment.start, //纵轴方向单行内子组件的对齐方式
   this.textDirection, //水平方向的子组件布局顺序，用于确定alignment对齐的参考系，即：textDirection的值为TextDirection.ltr，则alignment的start代表左，end代表右，即从左往右的顺序
