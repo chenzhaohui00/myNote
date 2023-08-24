@@ -1,6 +1,6 @@
 ## DecoratedBox
 
-Decoration是装饰的意思，`DecoratedBox`看名字就知道是一个带装饰的盒布局控件。定义如下：
+Decoration是装饰的意思，`DecoratedBox`看名字就知道是一个带装饰的盒布局组件。定义如下：
 
 ```dart
 const DecoratedBox({

@@ -1,0 +1,5 @@
+### CardView上面覆盖不了其他View
+
+比如我们的需求是要做一个loading的view覆盖在这个CardView上面，会发现覆盖不了，而其他View是可以的。
+
+这个问题的原因就是，CardView会用一个elevation属性，其他控件如果elevation值没有CardView大，就无法在他的上面。
