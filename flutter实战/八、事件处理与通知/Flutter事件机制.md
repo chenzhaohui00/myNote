@@ -2,7 +2,7 @@
 
 Flutter的整个事件处理，主要围绕一个 `HitTestResult` 列表进行，整个流程如下：
 
-1. 命中测试：找到哪些组件能接受到事件，手指按下时，触发`PointerDownEvent`事件，从根组件对应的 render object 开始，按照深度优先便利整个渲染树，对全部 render object 进行**命中测试**，命中测试通过的会被加入`HitTestResult`列表。
+1. 命中测试：找到哪些组件能接受到事件，手指按下时，触发`PointerDownEvent`事件，从根组件对应的 render object 开始，按照深度优先遍历整个渲染树，对全部 render object 进行**命中测试**，命中测试通过的会被加入`HitTestResult`列表。
 2. 事件分发：对能接受到事件的组件调用事件处理方法，就是调用`HitTestResult`列表中所有组件的`handleEvent`方法。
 3. 事件清理：一个手势的结束是一个`PointerUpEvent`，此时清除`HitTestResult`列表
 
@@ -105,7 +105,7 @@ bool defaultHitTestChildren(BoxHitTestResult result, { required Offset position 
 主要逻辑是遍历调用子组件的 hitTest() 方法，同时提供了一种中断机制：即遍历过程中只要有子节点的 hitTest() 返回了 true 时：
 
 1. 会终止子节点遍历，这意味着该子节点前面的兄弟节点将没有机会通过命中测试。注意，兄弟节点的遍历倒序的。
-2. 父节点也会通过命中测试。因为子节点 hitTest() 返回了 true 导父节点 hitTestChildren 也会返回 true，最终会导致 父节点的 hitTest 返回 true，父节点被添加到 HitTestResult 中。
+2. 父节点也会通过命中测试。因为子节点 hitTest() 返回了 true 会导致 父节点的 hitTest 返回 true，父节点被添加到 HitTestResult 中。
 
 这个中断机制的目的，就是保证大多数情况的，因为大多数情况下兄弟节点占用的布局空间是不重合的，因此当用户点击的坐标位置只会有一个节点，所以一旦找到它后（通过了命中测试，hitTest 返回true），就没有必要再判断其他兄弟节点了。
 

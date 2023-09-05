@@ -1,6 +1,6 @@
 # 跨组件状态共享
 
-这里的状态也指的是数据或对象，Flutter为了处理跨组件状态共享的问题，基于`inheritedWidget`开发了一套 Provider 框架。
+这里的状态也指的是数据或对象，Flutter为了处理跨组件状态共享的问题，基于`inheritedWidget`开发了一套`Provider`框架。
 
 主要包含三个部分：
 
