@@ -1,3 +1,5 @@
+### 找不到符号DaggerXXXComponment
+
 Dagger2编译一直报错：
 
 ```
@@ -18,3 +20,16 @@ Caused by: java.lang.Exception: No native library is found for os.name=Mac and o
 解决方案：
 
 **升级room版本到2.4.0-alpha03或以上**
+
+
+
+### Room中的'||'是什么意思？
+
+room的sql中的'||'相当于java的strng中的+，就是连接符，比如这个语句：
+
+```kotlin
+@Query("select * from OperationRecord where scoreId like '%' || :scoreId || '%' order by time asc")
+fun getOperationRecordByScoreId(scoreId: String): List<OperationRecord>
+```
+
+这里面的 || 就是+的意思，就是其实他是'$:scoreId%'
