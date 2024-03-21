@@ -54,7 +54,7 @@ class_table {
 
 这里每种结构都是一个无符号数或者表，比如魔数就是一个u4类型的无符号数，具体如下图：
 
-![img](pictures/Cgq2xl6DCV2AehqNAAD5VToVKKE770.png)
+![img](../pictures/Cgq2xl6DCV2AehqNAAD5VToVKKE770.png)
 
 ### class文件实例分析
 
@@ -66,7 +66,7 @@ class_table {
 
 ![img](../pictures/Cgq2xl6DCV6AcrLKAAIl1RRQwuM068.png)
 
-**2.每个String常量都是用一个CONSTANT_Class_info表来存的:**
+**2.每个String常量都是用一个CONSTANT_utf8_info表来存的:**
 
 ```
 table CONSTANT_utf8_info {
@@ -82,4 +82,4 @@ table CONSTANT_utf8_info {
 
 其中length代表具体这个string的长度，byte[]存的就是具体这个string本身。
 
-这也回答了那个经典问题：java中编译期String常量的长度最长是多少，因为这个length是一个u2，所以最长就是16个字节的无符号数的最大值，也就是2<sup>16</sup> - 1，65535个，String为null的时候length是0。
+这也回答了那个经典问题：java中编译期String常量的长度最长是多少，因为这个length是一个u2，所以最长就是2个字节的无符号数的最大值，也就是2<sup>16</sup> - 1，65535个，String为null的时候length是0。
