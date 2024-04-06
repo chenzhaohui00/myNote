@@ -1,6 +1,6 @@
 ## 1. activity - AMS
 
-startActivity的源码整体分三部分，第一部分是从启动activity这边自己的流程，就是通过instrumentation交给AMS的，AMS在Android8.0哦以后更名为了ATMS。
+startActivity的源码整体分三部分，第一部分是从启动activity这边自己的流程，就是通过instrumentation交给AMS的，ATMS是从Android 9.0开始引入的新架构，旨在增强对多窗口、分屏等用户交互模式的支持。
 
 ```java
 Activity.startActivity
