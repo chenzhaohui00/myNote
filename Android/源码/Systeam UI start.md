@@ -4,10 +4,10 @@
 SystemServer.main // code snap 1.1
 	SystemServer.run // code snap 1.2
 		SystemServer.startOtherServices
-			SystemServer.startSystemUi
+			SystemServer.startSystemUi //就是通过LocalServiceManager获取一下信息，然后start一下
 ```
 
-### code snap 1.1
+### code snap 1.1  Zygote启动
 
 ```java
 /**
@@ -18,26 +18,26 @@ public static void main(String[] args) {
 }
 ```
 
-### code snap 1.2
+### code snap 1.2  run方法，启动各种服务
 
 ```java
 private void run() {
 	/*
-	 * other ocde
+	 * 其他代码
 	 */
 	 
     // Start services.
     try {
         t.traceBegin("StartServices");
-        startBootstrapServices(t);
-        startCoreServices(t);
-        startOtherServices(t);
+        startBootstrapServices(t); //包括PMS,WMS,AMS,ATMS等
+        startCoreServices(t); //包括SystemConfigService,BatteryService等
+        startOtherServices(t); //启动SystemUIService
     } catch (Throwable ex) {
         Slog.e("System", "******************************************");
         Slog.e("System", "************ Failure starting system services", ex);
         throw ex;
     } finally {
-        t.traceEnd(); // StartServices
+        t.traceEnd();
     }
 }
 ```
@@ -46,7 +46,7 @@ private void run() {
 
 ## SystemUIService - SystemUIApplication
 
-```
+```java
 SystemUIService.onCreate
 	SystemUIApplication.startServicesIfNeeded //code snap 2.1
 ```
@@ -60,7 +60,7 @@ public void startServicesIfNeeded() {
 }
 ```
 
-
+根据SystemUIFactory获取需要启动的组件名数组，然后一次启动，具体获取需要启动的组件名通过 config.xml 配置：
 
 ```java
 public String[] getSystemUIServiceComponents(Resources resources) {
@@ -68,14 +68,16 @@ public String[] getSystemUIServiceComponents(Resources resources) {
 }
 ```
 
-
-
 ### config.xml
 
+读取的配置如下：
+
 ```xml
+<!-- 这里是配置的SystemUIFactory的组件名，CarSystemUI就是配置了自己的Factory -->
 <!-- SystemUIFactory component -->
 <string name="config_systemUIFactoryComponent" translatable="false">com.android.systemui.SystemUIFactory</string>
 
+<!-- 下面就是要启动的组建了 -->
 <!-- SystemUI Services: The classes of the stuff to start. -->
 <string-array name="config_systemUIServiceComponents" translatable="false">
     <item>com.android.systemui.util.NotificationChannels</item>
@@ -106,10 +108,10 @@ public String[] getSystemUIServiceComponents(Resources resources) {
 
 
 
-### startServicesIfNeeded
+### 最终的 startServicesIfNeeded
 
 ```java
-private SystemUI[] mServices;
+private SystemUI[] mServices; //所有的组件都是SystemUI类型
 
 private void startServicesIfNeeded(String metricsPrefix, String[] services) {
     if (mServicesStarted) {
@@ -118,9 +120,9 @@ private void startServicesIfNeeded(String metricsPrefix, String[] services) {
     mServices = new SystemUI[services.length];
 
 	/*
-	 * other ocde
+	 * 其他代码
 	 */
-    
+  
     final int N = services.length;
     for (int i = 0; i < N; i++) {
         String clsName = services[i];
@@ -128,6 +130,7 @@ private void startServicesIfNeeded(String metricsPrefix, String[] services) {
         log.traceBegin(metricsPrefix + clsName);
         long ti = System.currentTimeMillis();
         try {
+        		//创建每个组件
             SystemUI obj = mComponentHelper.resolveSystemUI(clsName);
             if (obj == null) {
                 Constructor constructor = Class.forName(clsName).getConstructor(Context.class);
@@ -143,6 +146,7 @@ private void startServicesIfNeeded(String metricsPrefix, String[] services) {
         }
 
         if (DEBUG) Log.d(TAG, "running: " + mServices[i]);
+      	//调用每个组件的start()方法
         mServices[i].start();
         log.traceEnd();
 
@@ -151,7 +155,9 @@ private void startServicesIfNeeded(String metricsPrefix, String[] services) {
         if (ti > 1000) {
             Log.w(TAG, "Initialization of " + clsName + " took " + ti + " ms");
         }
+
         if (mBootCompleteCache.isBootComplete()) {
+			    	//调用每个组件的onBootCompleted()方法
             mServices[i].onBootCompleted();
         }
 
@@ -164,11 +170,18 @@ private void startServicesIfNeeded(String metricsPrefix, String[] services) {
 }
 ```
 
+### SystemUI类
+
+```java
+```
+
+
+
 
 
 ## CarSystemUI
 
-
+对于CardSystemUI，首先他复用了SystemUI的代码，通过静态导入的方法，下面是CarSystemUI的Android.bp文件中导入的静态库：
 
 ```Android.bp
 static_libs: [
@@ -201,35 +214,7 @@ static_libs: [
 ],
 ```
 
-
-
-```java
-    @Override
-    public String[] getSystemUIServiceComponents(Resources resources) {
-        Set<String> names = new HashSet<>();
-
-        for (String s : super.getSystemUIServiceComponents(resources)) {
-            names.add(s);
-        }
-
-        for (String s : resources.getStringArray(R.array.config_systemUIServiceComponentsExclude)) {
-            names.remove(s);
-        }
-
-        for (String s : resources.getStringArray(R.array.config_systemUIServiceComponentsInclude)) {
-            names.add(s);
-        }
-
-        String[] finalNames = new String[names.size()];
-        names.toArray(finalNames);
-
-        return finalNames;
-    }
-```
-
-
-
-
+然后，他的config.xml中指定了CarSystemUIFactory，CarSystemUIFactory 继承了SystemUIFactory。另外config.xml还定义了自己要包含的和
 
 ```xml
 <string name="config_systemUIFactoryComponent" translatable="false">
@@ -261,5 +246,34 @@ static_libs: [
     <item>com.android.systemui.car.volume.VolumeUI</item>
     <item>com.android.systemui.car.cluster.ClusterDisplayController</item>
 </string-array>
+```
+
+然后复写了 SystemUIFactory 的 getSystemUIServiceComponents方法
+
+```java
+@Override
+public String[] getSystemUIServiceComponents(Resources resources) {
+    Set<String> names = new HashSet<>();
+
+  	//先通过父类中的方法获取原来的全部组件
+    for (String s : super.getSystemUIServiceComponents(resources)) {
+        names.add(s);
+    }
+
+    //移除配置文件中指定的不需要的组件
+    for (String s : resources.getStringArray(R.array.config_systemUIServiceComponentsExclude)) {
+        names.remove(s);
+    }
+
+  	//添加配置文件中指定的新组件
+    for (String s : resources.getStringArray(R.array.config_systemUIServiceComponentsInclude)) {
+        names.add(s);
+    }
+
+    String[] finalNames = new String[names.size()];
+    names.toArray(finalNames);
+
+    return finalNames;
+}
 ```
 
