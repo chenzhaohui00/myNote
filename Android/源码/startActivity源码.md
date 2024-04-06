@@ -1,15 +1,18 @@
 ## 1. activity - AMS
 
+startActivity的源码整体分三部分，第一部分是从启动activity这边自己的流程，就是通过instrumentation交给AMS的，AMS在Android8.0哦以后更名为了ATMS。
+
 ```java
 Activity.startActivity
-	Activity.startActivityForResult //skip some simple steps.
+	Activity.startActivityForResult
 		Instrumentation.execStartActivity //codesnap 1.1
-			ActivityTaskManagerService.startActivity //ATMS is new name of AMS since Android8.0
+			ActivityTaskManagerService.startActivity //交给了ATMS
 ```
 
 ### code snap 1.1
 
 ```java
+//获取到ATMS调用startActivity
 int result = ActivityTaskManager.getService().startActivity(whoThread,
     who.getOpPackageName(), who.getAttributionTag(), intent,
     intent.resolveTypeIfNeeded(who.getContentResolver()), token,
@@ -20,29 +23,33 @@ int result = ActivityTaskManager.getService().startActivity(whoThread,
 
 ## 2. AMS - ActivityStarter - ApplicationThread
 
+这部分主要的流程都在ActivityStarter，它负责从解析Intent、校验权限、确认被加入的task，到任务栈处理，最后交给task自己去resumeActivity，task会创建
+
 ```java
 ActivityTaskManagerService.startActivity
 	ActivityTaskManagerService.startActivityAsUser // code snap 2.0
 		ActivityStarter.execute
-			Request.resolveActivity //resove Intent and Activity, get resolveIntent and activityInfo and so on
-			ActivityStarter.executeRequest // check permission, create ActivityRecord instance
+			Request.resolveActivity //解析Intent和Activity, 获取到resolveIntent和activityInfo
+			ActivityStarter.executeRequest // 校验权限, 创建ActivityRecord实例
 				ActivityStarter.startActivityUnchecked
-					ActivityStarter.startActivityInner // task handle
-						ActivityStarter.computeLaunchingTaskFlags
-						ActivityStarter.computeSourceRootTask
+					ActivityStarter.startActivityInner
+						ActivityStarter.computeLaunchingTaskFlags //计算待启动的activity的flag
+						ActivityStarter.computeSourceRootTask //计算task
 						Task.startActivityLocked
-							Task.positionChildAtTop //move task to top
-						RootWindowContainer.resumeFocusedTasksTopActivities
+							Task.positionChildAtTop // 把task移到最前面
+						RootWindowContainer.resumeFocusedTasksTopActivities //可能不会立刻resume，但最终会resume
 							Task.resumeTopActivityUncheckedLocked
 								Task.resumeTopActivityInnerLocked
 									TaskFragment.resumeTopActivity
-										ActivityTaskSupervisor.startSpecificActivity // code snap 2.2
+										ActivityTaskSupervisor.startSpecificActivity // code snap 2.1
 											ActivityTaskSupervisor.realStartActivityLocked // code snap 2.2
 												ClientLifecycleManager.scheduleTransaction
 													ApplicationThread.scheduleTransaction
 ```
 
 ### code snap 2.0
+
+这一部分是获取到ActivityStarter，通过builder模式，把参数都放到ActivityStarter.mRequest中，然后excute。
 
 ```java
 return getActivityStartController().obtainStarter(intent, "startActivityAsUser")
@@ -62,12 +69,16 @@ return getActivityStartController().obtainStarter(intent, "startActivityAsUser")
 
 ### code snap 2.1
 
+这里是获取到待启动的进程的contoller，后面会用来获取其ApplicationThread
+
 ```java
 final WindowProcessController wpc =
         mService.getProcessController(r.processName, r.info.applicationInfo.uid);
 ```
 
 ### code snap 2.2
+
+这里是获取ClientTransaction实例，传递一些要处理的信息
 
 ```java
 final boolean isTransitionForward = r.isTransitionForward();
@@ -84,7 +95,7 @@ clientTransaction.addCallback(LaunchActivityItem.obtain(new Intent(r.intent),
         r.createFixedRotationAdjustmentsIfNeeded(), r.shareableActivityToken,
         r.getLaunchedFromBubble()));
 
-// Set desired final state.
+// 根据情况获取不同的生命周期的实例
 final ActivityLifecycleItem lifecycleItem;
 if (andResume) {
     lifecycleItem = ResumeActivityItem.obtain(isTransitionForward);
@@ -93,7 +104,7 @@ if (andResume) {
 }
 clientTransaction.setLifecycleStateRequest(lifecycleItem);
 
-// Schedule transaction.
+// 通过LifeCycleManager把transaction发出去
 mService.getLifecycleManager().scheduleTransaction(clientTransaction);
 ```
 
@@ -101,8 +112,9 @@ mService.getLifecycleManager().scheduleTransaction(clientTransaction);
 
 ```java
 void scheduleTransaction(ClientTransaction transaction) throws RemoteException {
-    //
+    //获取到了被启动Activity的app的ApplicatinThread
     final IApplicationThread client = transaction.getClient();
+    //交给它去执行对应方法
     transaction.schedule();
     if (!(client instanceof Binder)) {
         // If client is not an instance of Binder - it's a remote call and at this point it is
@@ -117,25 +129,29 @@ void scheduleTransaction(ClientTransaction transaction) throws RemoteException {
 
 ## 3. ApplicaitonThread
 
+最后这部分就是被启动的Application自己这边的流程，就是收到要处理的Activity的生命周期方法，通过Handler从ApplicationThread发给ActivityThread，然后调用不同的方法。
+
+对于lanchActivity，就是要创建Activity实例，Application实例（如果需要的话），attach activity，调用activity的onCreate，结束！
+
 ```java
 ApplicationThread.scheduleTransaction
-	ClientTransactionHandler.scheduleTransaction // sendMessage, codeSnap 3.1
+	ClientTransactionHandler.scheduleTransaction // 通过Handler去sendMessage, codeSnap 3.1
 		ActivityThread.H.handleMessage
 			TransactionExecutor.execute
 				TransactionExecutor.executeCallbacks
 					TransactionExecutor.cycleToPath
-						TransactionExecutor.performLifecycleSequence //dispatch lifecycle handle method, codeSnap 3.2
+						TransactionExecutor.performLifecycleSequence //分发lifecycle处理方法, codeSnap 3.2
 							ActivityThread.handleLaunchActivity
 								ActivityThread.performLaunchActivity
-									Instrumentation.newActivity
-									LoadedApk.makeApplication
-										Instrumentation.newApplication
-										Instrumentation.callApplicationOnCreate
-									Activity.attach
-										Activity.attachBaseContext
-										mWindow = new PhoneWindow
-										mWindow.setWindowManager
-                                    Instrumentation.callActivityOnCreate
+									Instrumentation.newActivity // 创建Activity实例
+									LoadedApk.makeApplication //创建Applicatin实例
+										Instrumentation.newApplication //还是Instrumentation来创建
+										Instrumentation.callApplicationOnCreate //调用application的onCreate方法
+									Activity.attach //很多重要的参数设置进来的地方
+										Activity.attachBaseContext //设置activity的context
+										mWindow = new PhoneWindow //phoneWindow创建
+										mWindow.setWindowManager //设置WindowManager
+                  Instrumentation.callActivityOnCreate //调用Activity的onCreate
 ```
 
 ### codeSnap 3.1
@@ -148,6 +164,8 @@ void scheduleTransaction(ClientTransaction transaction) {
 ```
 
 ### codeSnap 3.2
+
+根据不同的transaction实例，处理应该处理的生命周期方法
 
 ```java
 private void performLifecycleSequence(ActivityClientRecord r, IntArray path,
