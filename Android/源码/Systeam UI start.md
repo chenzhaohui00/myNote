@@ -213,8 +213,6 @@ public abstract class SystemUI implements Dumpable {
 
 
 
-
-
 ## CarSystemUI
 
 对于CardSystemUI，首先他复用了SystemUI的代码，通过静态导入的方法，下面是CarSystemUI的Android.bp文件中导入的静态库：
@@ -250,7 +248,7 @@ static_libs: [
 ],
 ```
 
-然后，他的config.xml中指定了CarSystemUIFactory，CarSystemUIFactory 继承了SystemUIFactory。另外config.xml还定义了自己要包含的和
+然后，他的config.xml中指定了CarSystemUIFactory，CarSystemUIFactory 继承了SystemUIFactory。另外config.xml还定义了自己要添加的和移除的
 
 ```xml
 <string name="config_systemUIFactoryComponent" translatable="false">
@@ -292,6 +290,7 @@ public String[] getSystemUIServiceComponents(Resources resources) {
     Set<String> names = new HashSet<>();
 
   	//先通过父类中的方法获取原来的全部组件
+    //通过静态包导入的SystemUi中的config.xml会和这个包里面的config.xml合并
     for (String s : super.getSystemUIServiceComponents(resources)) {
         names.add(s);
     }
