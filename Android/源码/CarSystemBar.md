@@ -162,7 +162,7 @@ protected void insetSystemBar(@SystemBarSide int side, CarSystemBarView view) {
 }
 ```
 
-
+### attachNavBarWindows
 
 ```java
 private void attachNavBarWindows() {
@@ -226,7 +226,7 @@ protected List<Integer> getSystemBarSidesByZOrder() {
 
 
 
-### SystemBarConfigs
+## SystemBarConfigs
 
 ```java
 //SystemBarConfigs

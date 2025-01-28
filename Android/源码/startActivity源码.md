@@ -44,7 +44,7 @@ ActivityTaskManagerService.startActivity
 										ActivityTaskSupervisor.startSpecificActivity // code snap 2.1
 											ActivityTaskSupervisor.realStartActivityLocked // code snap 2.2
 												ClientLifecycleManager.scheduleTransaction
-													ApplicationThread.scheduleTransaction
+													ApplicationThread.scheduleTransaction // code snap 2.3
 ```
 
 ### code snap 2.0

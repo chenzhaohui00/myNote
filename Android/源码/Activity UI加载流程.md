@@ -32,7 +32,7 @@ public abstract class Window {
 }
 ```
 继续查看Window类，发现是一个abstract类，上面的注释说明了其唯一的实现类是PhoneWindow。这里我们得知，getWindow()一定返回的是一个PhoneWindow，那么我们直接去看PhoneWindow的源码，找他的setContentView()方法。
-```
+```java
 @Override
 public void setContentView(int layoutResID) {
     // Note: FEATURE_CONTENT_TRANSITIONS may be set in the process of installing the window
@@ -104,8 +104,9 @@ protected DecorView generateDecor(int featureId) {
     return new DecorView(context, featureId, this, getAttributes());
 }
 ```
-重要的代码就一行，就是new了一个DecorView，如果继续点进去DecorView的构造方法，可以看到一个setWindow()方法算是重要的方法。其实就是在DecorView中存储外部的PhonWindow对象。不算重要，就不列代码了。  
+重要的代码就一行，就是new了一个DecorView，如果继续点进去DecorView的构造方法，可以看到一个setWindow()方法算是重要的方法。其实就是在DecorView中存储外部的PhonWindow对象。不算重要，就不列代码了。
 然后再回到`installDecor()`，继续看下一行关键代码:
+
 ```java
 if (mContentParent == null) {
     mContentParent = generateLayout(mDecor);
